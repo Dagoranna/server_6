@@ -5,8 +5,6 @@ const wss = new WebSocket.Server({ port: PORT });
 const clients = new Set();
 const clientsData = new Map();
 
-//test
-
 function polydice(dice) {
   return Math.floor(Math.random() * dice) + 1;
 }
