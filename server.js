@@ -100,7 +100,7 @@ wss.on("connection", (ws) => {
         */
         clientsData.set(ws, messageJSON);
         ws.send("user data is set: " + message);
-        if (messageJSON.user.userRole === "Gamer") {
+        if (messageJSON.user.userRole === "Gamer" && !messageJSON.gameId) {
           ws.send(findGames());
         }
 
