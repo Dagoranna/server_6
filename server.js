@@ -111,6 +111,9 @@ wss.on("connection", (ws) => {
         }
 
         break;
+      case "choosemaster":
+        ws.send(message);
+        break;
       case "polydice":
         let rollResults = [];
         for (let i = 0; i < messageJSON.sectionInfo.rollNumbers; i++) {
