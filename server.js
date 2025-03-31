@@ -112,7 +112,7 @@ wss.on("connection", (ws) => {
 
         break;
       case "choosemaster":
-        ws.send(message);
+        ws.send(JSON.stringify(messageJSON));
         break;
       case "polydice":
         let rollResults = [];
