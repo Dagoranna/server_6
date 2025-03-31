@@ -28,6 +28,33 @@ function sendToTeammatesExceptMe(ws, messageJSON) {
     }
   });
 }
+/*
+        {
+          "gameId": someId,
+          "user":
+            {
+            "userRole":"Gamer/Master",
+            "userName":"SomeGamer",
+            "userColor":"Lime",
+            "userEmail": userEmail,
+            },
+          "sectionName":"connection"
+        }
+        */
+function findGames() {
+  let DMs = {};
+  clients.forEach((client) => {
+    let clientData = clientsData.get(client);
+    if (clientData.user.userRole === "Master") {
+      DMs[clientData.user.userEmail] = clientData.user.userName;
+    }
+  });
+  let answer = {
+    sectionName: "games",
+    list: DMs,
+  };
+  return JSON.stringify(answer);
+}
 
 wss.on("connection", (ws) => {
   ws.send("connected");
@@ -55,11 +82,28 @@ wss.on("connection", (ws) => {
   // ----------- message -------------
   ws.on("message", (message) => {
     const messageJSON = JSON.parse(message);
-    //service message after connection
     switch (messageJSON.sectionName) {
       case "connection":
+        //service message after connection
+        /*
+        {
+          "gameId": someId,
+          "user":
+            {
+            "userRole":"Gamer/Master",
+            "userName":"SomeGamer",
+            "userColor":"Lime",
+            "userEmail": userEmail,
+            },
+          "sectionName":"connection"
+        }
+        */
         clientsData.set(ws, messageJSON);
         ws.send("user data is set: " + message);
+        if (messageJSON.user.userRole === "Gamer") {
+          ws.send(findGames());
+        }
+
         break;
       case "polydice":
         let rollResults = [];
