@@ -82,6 +82,13 @@ wss.on("connection", (ws) => {
   // ----------- message -------------
   ws.on("message", (message) => {
     const messageJSON = JSON.parse(message);
+    let currentData = clientsData.get(ws);
+    if (currentData) {
+      currentData.gameId = messageJSON.gameId;
+      clientsData.set(ws, currentData);
+    } else {
+      clientsData.set(ws, messageJSON);
+    }
     switch (messageJSON.sectionName) {
       case "connection":
         //service message after connection
@@ -98,7 +105,6 @@ wss.on("connection", (ws) => {
           "sectionName":"connection"
         }
         */
-        clientsData.set(ws, messageJSON);
         ws.send("user data is set: " + message);
         if (messageJSON.user.userRole === "Gamer" && !messageJSON.gameId) {
           ws.send(findGames());
