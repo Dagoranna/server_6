@@ -113,7 +113,7 @@ wss.on("connection", (ws) => {
           }
         } else if (messageJSON.sectionInfo.source === "charsheet") {
           rollResults[0] =
-            polydice(20) + Number(messageJSON.sectionInfo.diceModifier);
+            polydice(20) + parseInt(messageJSON.sectionInfo.diceModifier);
         }
         messageJSON.rollResults = rollResults;
         sendToTeammates(messageJSON);
