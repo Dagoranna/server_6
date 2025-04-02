@@ -28,19 +28,7 @@ function sendToTeammatesExceptMe(ws, messageJSON) {
     }
   });
 }
-/*
-        {
-          "gameId": someId,
-          "user":
-            {
-            "userRole":"Gamer/Master",
-            "userName":"SomeGamer",
-            "userColor":"Lime",
-            "userEmail": userEmail,
-            },
-          "sectionName":"connection"
-        }
-        */
+
 function findGames() {
   let DMs = {};
   clients.forEach((client) => {
@@ -89,6 +77,7 @@ wss.on("connection", (ws) => {
     } else {
       clientsData.set(ws, messageJSON);
     }
+    let rollResults = [];
     switch (messageJSON.sectionName) {
       case "connection":
         //service message after connection
@@ -115,12 +104,15 @@ wss.on("connection", (ws) => {
         ws.send(JSON.stringify(messageJSON));
         break;
       case "polydice":
-        let rollResults = [];
-        for (let i = 0; i < messageJSON.sectionInfo.rollNumbers; i++) {
-          rollResults.push(
-            polydice(messageJSON.sectionInfo.dice) +
-              messageJSON.sectionInfo.diceModifier
-          );
+        if (messageJSON.sectionInfo.source === "polydice") {
+          for (let i = 0; i < messageJSON.sectionInfo.rollNumbers; i++) {
+            rollResults.push(
+              polydice(messageJSON.sectionInfo.dice) +
+                messageJSON.sectionInfo.diceModifier
+            );
+          }
+        } else if (messageJSON.sectionInfo.source === "charsheet") {
+          rollResults[0] = polydice(20) + messageJSON.sectionInfo.diceModifier;
         }
         messageJSON.rollResults = rollResults;
         sendToTeammates(messageJSON);
