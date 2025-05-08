@@ -126,6 +126,7 @@ wss.on("connection", (ws) => {
         sendToTeammatesExceptMe(ws, messageJSON);
         break;
       case "globalMap":
+        sendToTeammatesExceptMe(ws, messageJSON);
         break;
       default:
         ws.send("unknown message type: " + message);
