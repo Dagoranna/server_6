@@ -65,7 +65,8 @@ wss.on("connection", (ws) => {
 
   const interval = setInterval(() => {
     if (!ws.isAlive) {
-      ws.terminate(); // Закрывает соединение
+      clearInterval(interval);
+      ws.terminate();
       return;
     }
 
@@ -152,5 +153,6 @@ wss.on("connection", (ws) => {
   ws.on("close", () => {
     clearInterval(interval);
     clients.delete(ws);
+    clientsData.delete(ws);
   });
 });
