@@ -5,6 +5,8 @@ const wss = new WebSocket.Server({ port: PORT });
 const clients = new Set();
 const clientsData = new Map();
 
+const lastMapMessages = new Map();
+
 function polydice(dice) {
   return Math.floor(Math.random() * dice) + 1;
 }
@@ -116,14 +118,33 @@ wss.on("connection", (ws) => {
 
           break;
         case "choosemaster":
+          /*
+          
+          const messageForServer: MessageFromServer = {
+          user: {
+            userRole: userRole,
+            userName: userName,
+            userColor: userColor,
+            userEmail: userEmail,
+          },
+          sectionName: "choosemaster",
+          gameId: DMMail,
+          DMName: DMName,
+        };
+          */
           wsSend(ws, JSON.stringify(messageJSON));
+          let lastMap = lastMapMessages.get(messageJSON.gameId);
+          if (lastMap) {
+            wsSend(ws, JSON.stringify(lastMap));
+          }
+          ///////////////
           break;
         case "polydice":
           if (messageJSON.sectionInfo.source === "polydice") {
             for (let i = 0; i < messageJSON.sectionInfo.rollNumbers; i++) {
               rollResults.push(
                 polydice(messageJSON.sectionInfo.dice) +
-                  messageJSON.sectionInfo.diceModifier
+                  messageJSON.sectionInfo.diceModifier,
               );
             }
           } else if (messageJSON.sectionInfo.source === "charsheet") {
@@ -137,6 +158,7 @@ wss.on("connection", (ws) => {
           sendToTeammates(messageJSON);
           break;
         case "gameMap":
+          lastMapMessages.set(messageJSON.gameId, messageJSON);
           sendToTeammatesExceptMe(ws, messageJSON);
           break;
         case "globalMap":
